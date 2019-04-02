@@ -3,6 +3,8 @@
 public class PlayerController : MonoBehaviour
 {
     public GameObject ball;
+    public float throwStregth = 5.0f;
+    public float ballDistance = 2.0f;
     public float speed = 3.0f;
     public float gravity = -5.0f;
     public float sensHorizontal = 5.0f;
@@ -18,7 +20,6 @@ public class PlayerController : MonoBehaviour
     {
         _characterController = GetComponent<CharacterController>();
         _camera = GetComponentInChildren<Camera>();
-
         Cursor.lockState = CursorLockMode.Locked;
     }
 
@@ -29,14 +30,16 @@ public class PlayerController : MonoBehaviour
 
         if (_isPicked)
         {
-            var ballPosition = new Vector3(_camera.transform.position.x, _camera.transform.position.y + 0.1f, _camera.transform.position.z + 0.5f);
-
+            var ballPosition = _camera.transform.position + _camera.transform.forward * ballDistance;
+            ball.GetComponent<Rigidbody>().useGravity = false;
+            ball.GetComponent<Rigidbody>().velocity = Vector3.zero;
             ball.transform.position = ballPosition;
-        }
+            ball.GetComponent<Collider>().enabled = false;
 
-        if (Input.GetMouseButtonDown(0))
-        {
-            Throw();
+            if (Input.GetMouseButtonDown(0))
+            {
+                Throw();
+            }
         }
 
         if (Input.GetKey(KeyCode.F))
@@ -72,7 +75,8 @@ public class PlayerController : MonoBehaviour
     {
         _isPicked = false;
         var rigidBody = ball.GetComponent<Rigidbody>();
-
-        rigidBody.AddForce(0.3f, 0, 0, ForceMode.Impulse);
+        rigidBody.useGravity = true;
+        ball.GetComponent<Collider>().enabled = true;
+        rigidBody.AddForce(_camera.transform.forward * throwStregth);
     }
 }

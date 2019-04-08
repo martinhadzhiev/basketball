@@ -3,7 +3,7 @@
 public class PlayerController : MonoBehaviour
 {
     public GameObject ball;
-    public float throwStregth = 5.0f;
+    public float throwStregth = 3.0f;
     public float ballDistance = 2.0f;
     public float speed = 3.0f;
     public float gravity = -5.0f;
@@ -14,6 +14,7 @@ public class PlayerController : MonoBehaviour
     private float _translation;
     private float _straffe;
     private bool _isPicked;
+    private bool _canThrow;
 
 
     void Start()
@@ -36,15 +37,13 @@ public class PlayerController : MonoBehaviour
             ball.transform.position = ballPosition;
             ball.GetComponent<Collider>().enabled = false;
 
-            if (Input.GetMouseButtonDown(0))
-            {
-                Throw();
-            }
+            Throw();
         }
 
         if (Input.GetKey(KeyCode.F))
         {
             _isPicked = true;
+            _canThrow = false;
         }
 
         if (Input.GetKeyDown("escape"))
@@ -73,10 +72,24 @@ public class PlayerController : MonoBehaviour
 
     private void Throw()
     {
-        _isPicked = false;
-        var rigidBody = ball.GetComponent<Rigidbody>();
-        rigidBody.useGravity = true;
-        ball.GetComponent<Collider>().enabled = true;
-        rigidBody.AddForce(_camera.transform.forward * throwStregth);
+        if (Input.GetMouseButton(0))
+        {
+            _canThrow = true;
+            if (throwStregth < 30)
+            {
+                throwStregth += 0.2f;
+            }
+
+            Debug.Log(throwStregth);
+        }
+        else if (!Input.GetMouseButton(0) && _canThrow)
+        {
+            _isPicked = false;
+            var rigidBody = ball.GetComponent<Rigidbody>();
+            rigidBody.useGravity = true;
+            ball.GetComponent<Collider>().enabled = true;
+            rigidBody.AddForce(_camera.transform.forward * throwStregth);
+            throwStregth = 3.0f;
+        }
     }
 }

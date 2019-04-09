@@ -3,7 +3,8 @@
 public class PlayerController : MonoBehaviour
 {
     public GameObject ball;
-    public float throwStregth = 3.0f;
+    public GameObject powerBar;
+    public float throwStregth = 5.0f;
     public float ballDistance = 2.0f;
     public float speed = 3.0f;
     public float gravity = -5.0f;
@@ -77,10 +78,8 @@ public class PlayerController : MonoBehaviour
             _canThrow = true;
             if (throwStregth < 30)
             {
-                throwStregth += 0.2f;
+                throwStregth += 0.5f;
             }
-
-            Debug.Log(throwStregth);
         }
         else if (!Input.GetMouseButton(0) && _canThrow)
         {
@@ -89,7 +88,9 @@ public class PlayerController : MonoBehaviour
             rigidBody.useGravity = true;
             ball.GetComponent<Collider>().enabled = true;
             rigidBody.AddForce(_camera.transform.forward * throwStregth);
-            throwStregth = 3.0f;
+            throwStregth = 5.0f;
         }
+
+        powerBar.transform.position = new Vector3(powerBar.transform.position.x, throwStregth * 6);
     }
 }
